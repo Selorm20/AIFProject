@@ -111,7 +111,21 @@ class BFSPathSearch(__PathSearch):
             del SearchLeafs[0]
                 
             #Concatenate new points to list of leaf to explore    
-            SearchLeafs += NearPoints         
+            SearchLeafs += NearPoints  
+            
+        for i in Result.keys():
+            Result[i].sort(key=lambda x: len(x))       
             
         #In that case, there is no path from start point to finish point 
         return Result
+    
+def ExtractSubPath(Path, StartPoint, FinishPoint):
+    try: i1 = Path.index(StartPoint)
+    except: return None
+    
+    try: i2 = Path.index(FinishPoint)
+    except: return None
+    
+    if(i1 == i2): return Path[i1]
+    if(i1 > i2): return Path[i2: i1: -1]
+    if(i1 < i2): return Path[i1: i2]    

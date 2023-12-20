@@ -13,7 +13,7 @@ def PrintBooleanMatrix(Matrix):
             else:  print("X ", end = "")
         print("")
     
-#Traps like tuple (x, y)
+#Traps like tuples (x, y)
 def ApplyFalseToMatrix(Matrix, Traps):
     for i in Traps:
         Matrix[i[1]][i[0]] = False
@@ -69,3 +69,5 @@ ApplyFalseToMatrix(Matrix, [(1, 0), (0, 1)])
 assert SearchPath2.CalculatePath((0, 0), [(4, 4)]) == {(4, 4): []}
 
 ApplyTrueToMatrix(Matrix, [(1, 0), (0, 1), (1, 1), (2, 1), (3, 1)])
+
+ApplyFalseToMatrix(Matrix, [(1, 1)])
