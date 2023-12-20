@@ -53,18 +53,18 @@ ApplyTrueToMatrix(Matrix, [(1, 0), (0, 1), (1, 1), (2, 1), (3, 1)])
 
 SearchPath2 = BFSPathSearch(GetNeighbourPointsFunctionMatrix)
 
-assert SearchPath1.CalculatePath((0, 0), (4, 4)) in SearchPath2.CalculatePath((0, 0), (4, 4))
+assert SearchPath1.CalculatePath((0, 0), (4, 4)) in SearchPath2.CalculatePath((0, 0), [(4, 4)])[(4, 4)]
 
 ApplyFalseToMatrix(Matrix, [(1, 1)])
 
-assert SearchPath1.CalculatePath((0, 0), (4, 4)) in SearchPath2.CalculatePath((0, 0), (4, 4))
+assert SearchPath1.CalculatePath((0, 0), (4, 4)) in SearchPath2.CalculatePath((0, 0), [(4, 4)])[(4, 4)]
 
 ApplyFalseToMatrix(Matrix, [(2, 1), (3, 1)])
 
-assert SearchPath1.CalculatePath((0, 0), (4, 4)) in SearchPath2.CalculatePath((0, 0), (4, 4))
+assert SearchPath1.CalculatePath((0, 0), (4, 4)) in SearchPath2.CalculatePath((0, 0), [(4, 4)])[(4, 4)]
 
 ApplyFalseToMatrix(Matrix, [(1, 0), (0, 1)])
 
-assert SearchPath2.CalculatePath((0, 0), (4, 4)) == []
+assert SearchPath2.CalculatePath((0, 0), [(4, 4)]) == {(4, 4): []}
 
 ApplyTrueToMatrix(Matrix, [(1, 0), (0, 1), (1, 1), (2, 1), (3, 1)])

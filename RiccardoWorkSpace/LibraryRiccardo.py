@@ -80,12 +80,13 @@ class BFSPathSearch(__PathSearch):
     def __init__(self, GetNeighbourPointsFunction):
         super().__init__(GetNeighbourPointsFunction)
     
-    def CalculatePath(self, StartPoint, FinishPoint):
+    def CalculatePath(self, StartPoint, FinishPoints):
         
         SearchLeafs = [self._SearchNode(StartPoint, None)]
         self._VisitedElements.clear()
         
-        Result = []
+        Result = dict()
+        for i in FinishPoints: Result[i] = []
         
         #While there is also 1 leaf to consider
         while(len(SearchLeafs) > 0):
@@ -98,12 +99,13 @@ class BFSPathSearch(__PathSearch):
             ElementSearchLeafs = list(map(lambda x: x.GetElement(), SearchLeafs))
 
             #Calculate Neighbour points of minimum point
-            NearPoints = list(filter(lambda x: x not in ElementSearchLeafs or x == FinishPoint, self._GetNeighbourPointsFunction(MinimumPoint.GetElement())))
+            NearPoints = list(filter(lambda x: x not in ElementSearchLeafs or x in FinishPoints, self._GetNeighbourPointsFunction(MinimumPoint.GetElement())))
             NearPoints = list(map(lambda x: self._SearchNode(x, MinimumPoint), NearPoints))
             
             #Check if finish point is found
             for i in NearPoints:
-                if(i.GetElement() == FinishPoint): Result.append(i.GetPath())
+                if(i.GetElement() in FinishPoints):
+                    Result[i.GetElement()].append(i.GetPath())
                    
             #Delete minimum point previously explored
             del SearchLeafs[0]
