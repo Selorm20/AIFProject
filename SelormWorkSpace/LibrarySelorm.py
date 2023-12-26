@@ -1,9 +1,42 @@
-#Create a class of character actions and define them
+# Create a class of character actions and define them
+from typing import List, Tuple
+
 class CharacterActions:
-    def __init__(self, Int):
-        self.Int = Int
+    def __init__(self, env):
+        self.env = env
+        self.actions = []
+
+    def move(self, direction):
+       
+     self.actions.append(self.env.actions.move(direction))
+
+    def attack(self, target):
         
-   def actions_from_path(start: Tuple[int, int], path: List[Tuple[int, int]]) -> List[int]:
+     self.actions.append(self.env.actions.attack(target))
+
+    def wait(self):
+       
+     self.actions.append(self.env.actions.wait())
+
+    def skill_use(self, skill_name, target):
+        
+        
+     self.actions.append(self.env.actions.skill_use(skill_name, target))
+
+    def item_use(self, item_name, target):
+       
+     self.actions.append(self.env.actions.item_use(item_name, target))
+
+    def get_actions(self):
+       
+        return self.actions
+
+    def clear_actions(self):
+        
+        self.actions = []
+
+
+def actions_from_path(start: Tuple[int, int], path: List[Tuple[int, int]]) -> List[int]:
     action_map = {
         "N": 0,
         "E": 1,
@@ -16,14 +49,35 @@ class CharacterActions:
         if x_s == x:
             if y_s > y:
                 actions.append(action_map["W"])
-            else: actions.append(action_map["E"])
+            else:
+                actions.append(action_map["E"])
         elif y_s == y:
             if x_s > x:
                 actions.append(action_map["N"])
-            else: actions.append(action_map["S"])
+            else:
+                actions.append(action_map["S"])
         else:
-            raise Exception("x and y can't change at the same time. oblique moves not allowed!")
+            raise Exception("x and y can't change at the same time. Oblique moves not allowed!")
         x_s = x
         y_s = y
-    
+
     return actions
+
+
+""" Example usage:
+minihack_environment = YourMiniHackEnvironment()
+character_actions = CharacterActions(minihack_environment)
+
+# Assuming you have a path in the form of (x, y) tuples
+path = [(1, 2), (1, 3), (2, 3), (3, 3)]
+
+actions = actions_from_path((0, 0), path)
+
+# Add the actions to the character_actions object
+for action in actions:
+    character_actions.move(action)
+
+# Get the final list of actions and use it in your minihack environment
+final_actions = character_actions.get_actions()
+print(final_actions)
+"""
