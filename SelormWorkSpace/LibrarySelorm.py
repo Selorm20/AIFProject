@@ -62,22 +62,3 @@ def actions_from_path(start: Tuple[int, int], path: List[Tuple[int, int]]) -> Li
         y_s = y
 
     return actions
-
-
-""" Example usage:
-minihack_environment = YourMiniHackEnvironment()
-character_actions = CharacterActions(minihack_environment)
-
-# Assuming you have a path in the form of (x, y) tuples
-path = [(1, 2), (1, 3), (2, 3), (3, 3)]
-
-actions = actions_from_path((0, 0), path)
-
-# Add the actions to the character_actions object
-for action in actions:
-    character_actions.move(action)
-
-# Get the final list of actions and use it in your minihack environment
-final_actions = character_actions.get_actions()
-print(final_actions)
-"""
