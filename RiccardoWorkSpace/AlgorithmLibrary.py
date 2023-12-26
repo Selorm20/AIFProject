@@ -4,7 +4,7 @@ class __PathSearch:
         self._VisitedElements = [] 
         self._GetNeighbourPointsFunction = lambda x: list(filter(lambda i: i not in self._VisitedElements, GetNeighbourPointsFunction(x)))
     
-    def CalculatePath(self, StartPoint, FinishPoint):
+    def CalculatePath(self, StartPoint, FinishPoints):
         return NotImplemented
     
     def GetMinimumPointPath(self, Points):
@@ -47,13 +47,18 @@ class AstarPathSearch(__PathSearch):
     def __init__(self, GetNeighbourPointsFunction):
         super().__init__(GetNeighbourPointsFunction)
     
-    def CalculatePath(self, StartPoint, FinishPoint):
+    def CalculatePath(self, StartPoint, FinishPoints):
+        
+        Targets = list(FinishPoints)
         
         SearchLeafs = [self._SearchNode(StartPoint, None)]
         self._VisitedElements.clear()
         
+        Result = dict()
+        for i in FinishPoints: Result[i] = None
+        
         #While there is also 1 leaf to consider
-        while(len(SearchLeafs) > 0):
+        while(len(SearchLeafs) > 0 and len(Targets) > 0):
             
             #Find index of minimum element
             PointToAnalyze, r = self.GetMinimumPointPath(SearchLeafs)
@@ -66,21 +71,25 @@ class AstarPathSearch(__PathSearch):
             #Calculate Neighbour points of minimum point
             NearPoints = list(map(lambda x: self._SearchNode(x, PointToAnalyze),  self._GetNeighbourPointsFunction(PointToAnalyze.GetElement())))
             
-            #Check if finish point is found
+            #Check if any finish point is found
             for i in NearPoints:
-                if(i.GetElement() == FinishPoint): return i.GetPath()
+                if(i.GetElement() in FinishPoints):
+                    Result[i.GetElement()] = i.GetPath()
+                    del Targets[Targets.index(i.GetElement())]
                 
             #Concatenate new points to list of leaf to explore    
             SearchLeafs += NearPoints            
             
         #In that case, there is no path from start point to finish point 
-        return None
+        return Result
 
 class BFSPathSearch(__PathSearch):
     def __init__(self, GetNeighbourPointsFunction):
         super().__init__(GetNeighbourPointsFunction)
     
     def CalculatePath(self, StartPoint, FinishPoints):
+        
+        Targets = list(FinishPoints)
         
         SearchLeafs = [self._SearchNode(StartPoint, None)]
         self._VisitedElements.clear()
@@ -89,12 +98,13 @@ class BFSPathSearch(__PathSearch):
         for i in FinishPoints: Result[i] = []
         
         #While there is also 1 leaf to consider
-        while(len(SearchLeafs) > 0):
+        while(len(SearchLeafs) > 0 and len(Targets) > 0):
             
             #Find index of minimum element
             MinimumPoint = SearchLeafs[0]
           
             self._VisitedElements.append(MinimumPoint.GetElement())
+            if(MinimumPoint.GetElement() in Targets): del Targets[Targets.index(MinimumPoint.GetElement())]
             
             ElementSearchLeafs = list(map(lambda x: x.GetElement(), SearchLeafs))
 
@@ -118,14 +128,3 @@ class BFSPathSearch(__PathSearch):
             
         #In that case, there is no path from start point to finish point 
         return Result
-    
-def ExtractSubPath(Path, StartPoint, FinishPoint):
-    try: i1 = Path.index(StartPoint)
-    except: return None
-    
-    try: i2 = Path.index(FinishPoint)
-    except: return None
-    
-    if(i1 == i2): return Path[i1]
-    if(i1 > i2): return Path[i2: i1: -1]
-    if(i1 < i2): return Path[i1: i2]    

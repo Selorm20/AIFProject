@@ -1,4 +1,4 @@
-from LibraryRiccardo import *
+from AlgorithmLibrary import *
 
 def CreateBooleanMatrix(x, y):
     Result = []
@@ -35,34 +35,34 @@ def GetNeighbourPointsFunctionMatrix(Point):
 
 SearchPath1 = AstarPathSearch(GetNeighbourPointsFunctionMatrix)
 
-assert SearchPath1.CalculatePath((0, 0), (4, 4)) == [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
+assert SearchPath1.CalculatePath((0, 0), [(4, 4)])[(4, 4)] == [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4)]
 
 ApplyFalseToMatrix(Matrix, [(1, 1)])
 
-assert SearchPath1.CalculatePath((0, 0), (4, 4)) == [(0, 0), (1, 0), (2, 1), (3, 2), (4, 3), (4, 4)]
+assert SearchPath1.CalculatePath((0, 0), [(4, 4)])[(4, 4)] == [(0, 0), (1, 0), (2, 1), (3, 2), (4, 3), (4, 4)]
 
 ApplyFalseToMatrix(Matrix, [(2, 1), (3, 1)])
 
-assert SearchPath1.CalculatePath((0, 0), (4, 4)) == [(0, 0), (0, 1), (1, 2), (2, 3), (3, 4), (4, 4)]
+assert SearchPath1.CalculatePath((0, 0), [(4, 4)])[(4, 4)] == [(0, 0), (0, 1), (1, 2), (2, 3), (3, 4), (4, 4)]
 
 ApplyFalseToMatrix(Matrix, [(1, 0), (0, 1)])
 
-assert SearchPath1.CalculatePath((0, 0), (4, 4)) == None
+assert SearchPath1.CalculatePath((0, 0), [(4, 4)])[(4, 4)] == None
 
 ApplyTrueToMatrix(Matrix, [(1, 0), (0, 1), (1, 1), (2, 1), (3, 1)])
 
 SearchPath2 = BFSPathSearch(GetNeighbourPointsFunctionMatrix)
 
-assert SearchPath1.CalculatePath((0, 0), (4, 4)) in SearchPath2.CalculatePath((0, 0), [(4, 4)])[(4, 4)]
+assert SearchPath1.CalculatePath((0, 0), [(4, 4)])[(4, 4)] in SearchPath2.CalculatePath((0, 0), [(4, 4)])[(4, 4)]
 
 ApplyFalseToMatrix(Matrix, [(1, 1)])
 
-assert SearchPath1.CalculatePath((0, 0), (4, 4)) in SearchPath2.CalculatePath((0, 0), [(4, 4)])[(4, 4)]
+assert SearchPath1.CalculatePath((0, 0), [(4, 4)])[(4, 4)] in SearchPath2.CalculatePath((0, 0), [(4, 4)])[(4, 4)]
 
 ApplyFalseToMatrix(Matrix, [(2, 1), (3, 1)])
 
-assert SearchPath1.CalculatePath((0, 0), (4, 4)) in SearchPath2.CalculatePath((0, 0), [(4, 4), (3, 2)])[(4, 4)]
-assert SearchPath1.CalculatePath((0, 0), (3, 2)) in SearchPath2.CalculatePath((0, 0), [(4, 4), (3, 2)])[(3, 2)]
+assert SearchPath1.CalculatePath((0, 0), [(4, 4)])[(4, 4)] in SearchPath2.CalculatePath((0, 0), [(4, 4), (3, 2)])[(4, 4)]
+assert SearchPath1.CalculatePath((0, 0), [(3, 2)])[(3, 2)] in SearchPath2.CalculatePath((0, 0), [(4, 4), (3, 2)])[(3, 2)]
 
 ApplyFalseToMatrix(Matrix, [(1, 0), (0, 1)])
 
