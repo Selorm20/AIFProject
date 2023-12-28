@@ -34,8 +34,8 @@ class CharacterActions:
     def clear_actions(self):
         
         self.actions = []
-
-
+    
+   
 def actions_from_path(start: Tuple[int, int], path: List[Tuple[int, int]]) -> List[int]:
     action_map = {
         "N": 0,
