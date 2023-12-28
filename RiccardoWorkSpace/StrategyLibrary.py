@@ -27,31 +27,62 @@ class Strategy:
         
     def GetActualPath(self):
         return list(self.__ActualPath)
+    
+    def __ProbabilityMonsterToStep(self, MonsterPosition, GoalPosition, StepNumber, SuccessorFunction):
         
+        #Actual step
+        KnowSteps = dict()
+        KnowSteps[MonsterPosition] = 1
+        
+        #for i in range(max(StepGoals)):
+        for _ in range(StepNumber):
+            
+            #New step to calculate
+            NewKnowSteps = dict()
+            
+            #Dictionary for calculating all successor steps from actual steps
+            SuccessorStepsDict = dict()
+            for Step in KnowSteps: SuccessorStepsDict[Step] = SuccessorFunction(Step)
+            
+            #For each Actual step
+            for ActualStep in KnowSteps:
+                
+                #For each next step from actual step
+                for SuccessorStep in SuccessorStepsDict[ActualStep]:
+                    
+                    #Add value of actual step to value of next step
+                    try: NewKnowSteps[SuccessorStep] += KnowSteps[ActualStep]
+                    except KeyError: NewKnowSteps[SuccessorStep] = KnowSteps[ActualStep]
+                    
+            KnowSteps = NewKnowSteps
+            
+        #Calculate number of all paths to goal paths StepNumber steps
+        try: AllGoalPathsNumber = KnowSteps[GoalPosition]
+        except KeyError: AllGoalPathsNumber = 0
+            
+        #Calculate all paths aviable with StepNumber steps
+        AllPathsNumber = sum(list(map(lambda x: KnowSteps[x], KnowSteps)))
+    
+        return AllGoalPathsNumber / AllPathsNumber 
+    
     #This method represents calculate risk for a path
     def __CalculateRiskPathMonsters(self, Path, MonsterPositions, SuccessorFunction):
             
-        StepRiskList = [0]*len(Path)
+        StepRiskList = [[]]*len(Path)
         
         #For each step of our path, calculate total risk cost
         for i, Step in enumerate(Path):
             
-            #Calculate paths of all monsters
-            MonsterPaths = self.__Calculator.CalculatePath(Step, MonsterPositions)
-            MonsterPaths = list(map(lambda x: MonsterPaths[x][0], MonsterPaths.keys()))
+            for MonsterPosition in MonsterPositions:
+                StepRiskList[i].append(self.__ProbabilityMonsterToStep(MonsterPosition, Step, i, SuccessorFunction))
+        
+        #Apply formula for each step taking probability (for each monster) to be in i step   
+        for i in range(len(StepRiskList)):
             
-            #For each monster, calculate cost considering our step and our monster
-            for MonsterPath in MonsterPaths:
-                RiskCost = 1
-                
-                #If monster has no enough step to take in time this Step, pass to next Path monster
-                if(i < len(MonsterPath)): continue
-                
-                #Calculate risk of this path monster
-                for StepMonster in MonsterPath: RiskCost *= 1/len(SuccessorFunction(StepMonster))
-                
-                #Add Risk cost of monster path to all risk cost of this step
-                StepRiskList[i] += RiskCost
+            #Formula start here
+            AllNotP = 1
+            for p in StepRiskList[i]: AllNotP *= 1-p
+            StepRiskList[i] = 1 - AllNotP
         
         #Give like result sum of all risk cost of all steps
         return sum(StepRiskList)
