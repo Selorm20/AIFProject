@@ -1,42 +1,22 @@
 class Moving:
     def __init__(self, env):
         self.__env = env
-        
     
     #Do next position to enviroment
-    
     def Move(self, ActualPosition, NextPosition):
+        
+        DiffStep = (int(ActualPosition[0] - NextPosition[0]), int(ActualPosition[1] - NextPosition[1]))
+        
         Moves = {
-            0: (-1, 0), #moveUp
-            1: (1, 0),  #moveDown
-            2: (0, -1), #moveLeft
-            3: (0, 1)   #moveRight
-        } 
-
-        if NextPosition in Moves:
-            coordinates = Moves[NextPosition]
-            new_position = (ActualPosition[0] + coordinates[0], ActualPosition[1] + coordinates[1])
-            
-            #return True if move is done
-            if self.move_is_valid(new_position):
-                ActualPosition = new_position
-                print("Moved to {ActualPosition}")
-                return True
-            
-            #return False if move is not done after call this method
-            else:
-                print("Move invalid. Try another")
-            
-            return False
+            (1, 0):   0, #Moving N
+            (0, -1):  1, #Moving E
+            (-1, 0):  2, #Moving S
+            (0, 1):   3, #Moving W
+            (1, -1):  4, #Moving NE
+            (-1, -1): 5, #Moving SE
+            (-1, 1):  6, #Moving SW
+            (1, 1):   7, #Moving NW
+            (0, 0):   46 #Rest
+        }
         
-        #Defining the move_valid variable to make sure agent stays in environment
-        def move_is_valid(self, new_position):
-            return 0 <= new_position[0] < len(self.__env) and 0 <= new_position[1] < len(self.__env[0])
-        
-        
-    
-
-
-
-    
-    
+        return self.__env.step(Moves[DiffStep])[0]

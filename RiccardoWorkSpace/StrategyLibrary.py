@@ -1,4 +1,4 @@
-from AlgorithmLibrary import *
+import AlgorithmLibrary as AL
 
 def ExtractSubPath(Path, Point1, Point2):
     try:
@@ -17,7 +17,7 @@ class Strategy:
         
         self.__SuccessorFunction = SuccessorFunction
         
-        self.__Calculator = BFSPathSearch(SuccessorFunction)
+        self.__Calculator = AL.BFSPathSearch(SuccessorFunction)
         
         self.__ActualPath = []
         self.ActualGoal = None
@@ -90,21 +90,12 @@ class Strategy:
     #Calculate next optimal point to choose
     def Calculate(self, ActualPosition, MonsterPositions):
 
-        #Update own actual solution if it is possible
-        self.__ActualPath = ExtractSubPath(self.__ActualPath, ActualPosition, self.__ActualPath[-1])
-        if(self.__ActualPath == None): self.__ActualPath = []
-        
-        #If there is no any calculated path
-        if(self.__ActualPath == []):
-            self.__ActualPath = self.__Calculator.CalculatePath(ActualPosition, [self.__ActualGoal])[self.__ActualGoal][0]
-            return self.__ActualPath[0]
-        
         #Calculate all solutions from actual point (adding also)
-        Solutions = self.__Calculator.CalculatePath(ActualPosition, [self.__ActualGoal])[self.__ActualGoal]
-        if(self.__ActualPath not in Solutions): Solutions = [self.__ActualPath] + Solutions
+        Solutions = self.__Calculator.CalculatePath(ActualPosition, [self.ActualGoal])[self.ActualGoal]
+        if(self.__ActualPath not in Solutions and self.__ActualPath != []): Solutions = [self.__ActualPath] + Solutions
         
         Solutions.sort(key=lambda x: (self.__CalculateRiskPathMonsters(x, MonsterPositions, self.__SuccessorFunction), len(x)))
         
         self.__ActualPath = Solutions[0]
             
-        return self.__ActualPath[0]
+        return self.__ActualPath[1]

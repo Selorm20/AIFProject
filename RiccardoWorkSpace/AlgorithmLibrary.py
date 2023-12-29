@@ -123,8 +123,7 @@ class BFSPathSearch(__PathSearch):
             #Concatenate new points to list of leaf to explore    
             SearchLeafs += NearPoints  
             
-        for i in Result.keys():
-            Result[i].sort(key=lambda x: len(x))       
+        for i in Result.keys(): Result[i].sort(key=lambda x: len(x))     
             
         #In that case, there is no path from start point to finish point 
         return Result
