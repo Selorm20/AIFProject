@@ -1,4 +1,5 @@
 import RiccardoWorkSpace.AlgorithmLibrary as AL
+import RiccardoWorkSpace.functions as FUN
 
 def ExtractSubPath(Path, Point1, Point2):
     try:
@@ -16,9 +17,9 @@ class Strategy:
     def __init__(self, SuccessorFunction):   
         
         self.__SuccessorFunction = SuccessorFunction
-        
+
         self.__Calculator = AL.BFSPathSearch(SuccessorFunction)
-        
+                
         self.__ActualPath = []
         self.ActualGoal = None
         
@@ -32,38 +33,27 @@ class Strategy:
     def __CalculateRiskPathMonsters(self, Path, MonsterPositions, SuccessorFunction):
             
         RiskCost = 0
-        
-        #For each monster
-        for StartPoint in MonsterPositions:
-            
-            ActualPoints = set()
-            ActualPoints.add(StartPoint)
-            
-            #For each step of path, calculate position where monster can be
-            for StepPath in Path:
-                
-                KnewPoints = set()
-                
-                for Point in ActualPoints:
-                    for NewPoint in SuccessorFunction(Point):
-                        KnewPoints.add(NewPoint)
-                
-                ActualPoints = KnewPoints
-                
-                #If monster can be in this step of path
-                if(StepPath in ActualPoints): RiskCost += 1
-                
+        for i in range(len(Path)-1):
+            if i==0:
+                RiskCost += 1000 * FUN.n_monsters_there(Path[1],MonsterPositions,SuccessorFunction,1)
+            elif i==1:
+                RiskCost += 100 * FUN.n_monsters_there(Path[2],MonsterPositions,SuccessorFunction,2)
+            elif i==2:
+                RiskCost += 10 * FUN.n_monsters_there(Path[3],MonsterPositions,SuccessorFunction,3)
+            else:
+                RiskCost += 1 * FUN.n_monsters_there(Path[i+1],MonsterPositions,SuccessorFunction,i+1)
+                    
         return RiskCost
     
     #Calculate next optimal point to choose
-    def Calculate(self, ActualPosition, MonsterPositions):
-        
-        #Calculate all solutions from actual point (adding also)
-        Solutions = self.__Calculator.CalculatePath(ActualPosition, [self.ActualGoal])[self.ActualGoal]
-        if(self.__ActualPath not in Solutions and self.__ActualPath != []): Solutions = [self.__ActualPath] + Solutions
-        
+    def Calculate(self, ActualPosition, MonsterPositions, n_paths, version="v2"):
+        vers = {"v1":self.__Calculator.CalculatePath_v1, "v2":self.__Calculator.CalculatePath_v2, "v3":self.__Calculator.CalculatePath_v3 }
+        Solutions = vers[version](ActualPosition, self.ActualGoal, n_paths, MonsterPositions, self.__SuccessorFunction)
         Solutions.sort(key=lambda x: (self.__CalculateRiskPathMonsters(x, MonsterPositions, self.__SuccessorFunction), len(x)))
-        
+        for i in Solutions:
+            print(i, self.__CalculateRiskPathMonsters(i, MonsterPositions, self.__SuccessorFunction))
+
         self.__ActualPath = Solutions[0]
             
         return self.__ActualPath[1]
+    
