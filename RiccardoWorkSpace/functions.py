@@ -14,6 +14,8 @@ def n_monsters_there(Position,MonsterPositions,SuccessorFunction,n_steps):
     return n_monsters
 
 def is_safe(Position,MonsterPositions,SuccessorFunction):
+    if Position in MonsterPositions:
+        return False
     if n_monsters_there(Position,MonsterPositions,SuccessorFunction,1)==0:
         return True
     else:

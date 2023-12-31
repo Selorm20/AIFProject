@@ -96,11 +96,10 @@ class BFSPathSearch(__PathSearch):
     def CalculatePath_v1(self, StartPoint, FinishPoint, num_paths, MonsterPositions, SuccessorFunction):
         Target = FinishPoint
         Result = []
-        StartNode = [self._SearchNode(StartPoint, None)][0]
-        NearPoints = SuccessorFunction(StartNode.GetElement())
+        NearPoints = SuccessorFunction(StartPoint)
         NearPoints = [point for point in NearPoints if FUN.is_safe(point,MonsterPositions,SuccessorFunction)]
         if(len(NearPoints)==0):
-            NearPoints = self._GetNeighbourPointsFunction(StartNode.GetElement())
+            NearPoints = self._GetNeighbourPointsFunction(StartPoint)
         elif len(NearPoints)==1:
             Result = [[StartPoint,NearPoints[0]]]
             return Result
@@ -141,3 +140,6 @@ class BFSPathSearch(__PathSearch):
             SearchLeafs += NearNodes
             i += 1
         return Result
+
+    def where_will_wolf_go(WolfPosition,CharacterPosition):
+        print(CalculatePath_base(WolfPosition,CharacterPosition,1))

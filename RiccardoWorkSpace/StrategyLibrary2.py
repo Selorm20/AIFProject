@@ -30,30 +30,45 @@ class Strategy:
         return list(self.__ActualPath)
     
     #This method represents calculate risk for a path
-    def __CalculateRiskPathMonsters(self, Path, MonsterPositions, SuccessorFunction):
-            
+    def __CalculateRiskPathMonsters(self, Path, MonsterPositions, SuccessorFunction, step):
         RiskCost = 0
-        for i in range(len(Path)-1):
-            if i==0:
-                RiskCost += 1000 * FUN.n_monsters_there(Path[1],MonsterPositions,SuccessorFunction,1)
-            elif i==1:
-                RiskCost += 100 * FUN.n_monsters_there(Path[2],MonsterPositions,SuccessorFunction,2)
-            elif i==2:
-                RiskCost += 10 * FUN.n_monsters_there(Path[3],MonsterPositions,SuccessorFunction,3)
-            else:
-                RiskCost += 1 * FUN.n_monsters_there(Path[i+1],MonsterPositions,SuccessorFunction,i+1)
+        if step==0:
+            for i in range(len(Path)-1):
+                if i==0:
+                    RiskCost += 1000 * FUN.n_monsters_there(Path[1],MonsterPositions,SuccessorFunction,0)
+                if i==1:
+                    RiskCost += 10 * FUN.n_monsters_there(Path[2],MonsterPositions,SuccessorFunction,1)
+                elif i==2:
+                    RiskCost += 5 * FUN.n_monsters_there(Path[3],MonsterPositions,SuccessorFunction,2)
+                else:
+                    RiskCost += 1 * FUN.n_monsters_there(Path[i+1],MonsterPositions,SuccessorFunction,i)
+        else :
+            for i in range(len(Path)-1):
+                if i==0:
+                    RiskCost += 1000 * FUN.n_monsters_there(Path[1],MonsterPositions,SuccessorFunction,1)
+                if i==1:
+                    RiskCost += 10 * FUN.n_monsters_there(Path[2],MonsterPositions,SuccessorFunction,2)
+                elif i==2:
+                    RiskCost += 5 * FUN.n_monsters_there(Path[3],MonsterPositions,SuccessorFunction,3)
+                else:
+                    RiskCost += 1 * FUN.n_monsters_there(Path[i+1],MonsterPositions,SuccessorFunction,i+1)
                     
         return RiskCost
     
     #Calculate next optimal point to choose
-    def Calculate(self, ActualPosition, MonsterPositions, n_paths, version="v2"):
+    def Calculate(self, ActualPosition, MonsterPositions, n_paths, version, step):
         vers = {"v1":self.__Calculator.CalculatePath_v1, "v2":self.__Calculator.CalculatePath_v2, "v3":self.__Calculator.CalculatePath_v3 }
         Solutions = vers[version](ActualPosition, self.ActualGoal, n_paths, MonsterPositions, self.__SuccessorFunction)
-        Solutions.sort(key=lambda x: (self.__CalculateRiskPathMonsters(x, MonsterPositions, self.__SuccessorFunction), len(x)))
+        Solutions.sort(key=lambda x: (self.__CalculateRiskPathMonsters(x, MonsterPositions, self.__SuccessorFunction, step), len(x)))
         for i in Solutions:
-            print(i, self.__CalculateRiskPathMonsters(i, MonsterPositions, self.__SuccessorFunction))
+            print(i, self.__CalculateRiskPathMonsters(i, MonsterPositions, self.__SuccessorFunction, step))
 
         self.__ActualPath = Solutions[0]
             
-        return self.__ActualPath[1]
+        return self.__ActualPath[1], self.__CalculateRiskPathMonsters(Solutions[0],MonsterPositions,self.__SuccessorFunction,step)
     
+    def where_will_wolf_go(self, WolfPositions,CharacterPosition):
+        Solution = []
+        for i in WolfPositions:
+            Solution.append(self.__Calculator.CalculatePath_base(i, CharacterPosition, 1))
+        return Solution
