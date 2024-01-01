@@ -1,6 +1,8 @@
                                           Artificial Intelligence Fundamentals
                                            
                                                   Alpha Team Project
+                                                  
+                                                  NETHACK HUMAN AGENT
 
 Overview
 
@@ -17,8 +19,9 @@ Project environment & softwares
 - Minihack
 - Python
 - Github
+- Linux, Ubuntu (WSL2)
 
 Team members
-- Riccardo
-- Jacopo
-- Selorm
+- Riccardo Marcaccio
+- Iacopo Stracca
+- Selorm Kojo Apoh
