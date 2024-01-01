@@ -1,4 +1,3 @@
-import RiccardoWorkSpace.functions as FUN
 class __PathSearch:
     def __init__(self, GetNeighbourPointsFunction):
         
@@ -51,62 +50,6 @@ class BFSPathSearch(__PathSearch):
     def __init__(self, GetNeighbourPointsFunction):
         super().__init__(GetNeighbourPointsFunction)
 
-    def CalculatePath_v3(self, StartPoint, FinishPoint, num_paths, MonsterPositions, SuccessorFunction):
-        Target = FinishPoint
-        Result = []
-        StartNode = [self._SearchNode(StartPoint, None)][0]
-        NearPoints = SuccessorFunction(StartNode.GetElement())
-        NearPoints = [point for point in NearPoints if FUN.is_safe(point,MonsterPositions,SuccessorFunction)]
-        if(len(NearPoints)==0):
-            NearPoints = self._GetNeighbourPointsFunction(StartNode.GetElement())
-        elif len(NearPoints)==1:
-            Result = [[StartPoint,NearPoints[0]]]
-            return Result
-        for possible_nearpoint in NearPoints:
-            StartNode2 = [self._SearchNode(possible_nearpoint, None)][0]
-            NearPoints2 = SuccessorFunction(StartNode2.GetElement())
-            NearPoints2 = [point for point in NearPoints2 if FUN.is_safe(point,MonsterPositions,SuccessorFunction)]
-            if len(NearPoints2)==1:
-                Result.append([StartPoint,possible_nearpoint,NearPoints2[0]])
-            for possible_nearpoint2 in NearPoints2:
-                for result in self.CalculatePath_base(possible_nearpoint2, Target, int(num_paths/len(NearPoints2))):
-                    result.insert(0, possible_nearpoint)
-                    result.insert(0, StartPoint)
-                    Result.append(result)
-        return Result
-    
-    def CalculatePath_v2(self, StartPoint, FinishPoint, num_paths, MonsterPositions, SuccessorFunction):
-        Target = FinishPoint
-        Result = []
-        StartNode = [self._SearchNode(StartPoint, None)][0]
-        NearPoints = SuccessorFunction(StartNode.GetElement())
-        NearPoints = [point for point in NearPoints if FUN.is_safe(point,MonsterPositions,SuccessorFunction)]
-        if(len(NearPoints)==0):
-            NearPoints = self._GetNeighbourPointsFunction(StartNode.GetElement())
-        elif len(NearPoints)==1:
-            Result = [[StartPoint,NearPoints[0]]]
-            return Result
-        for possible_nearpoint in NearPoints:
-            for result in self.CalculatePath_base(possible_nearpoint, Target, int(num_paths/len(NearPoints))):
-                    result.insert(0, StartPoint)
-                    Result.append(result)
-        return Result
-
-    
-    def CalculatePath_v1(self, StartPoint, FinishPoint, num_paths, MonsterPositions, SuccessorFunction):
-        Target = FinishPoint
-        Result = []
-        NearPoints = SuccessorFunction(StartPoint)
-        NearPoints = [point for point in NearPoints if FUN.is_safe(point,MonsterPositions,SuccessorFunction)]
-        if(len(NearPoints)==0):
-            NearPoints = self._GetNeighbourPointsFunction(StartPoint)
-        elif len(NearPoints)==1:
-            Result = [[StartPoint,NearPoints[0]]]
-            return Result
-        Result = self.CalculatePath_base(StartPoint, Target, num_paths)
-        return Result
-
-
     def CalculatePath_base(self, StartPoint, FinishPoint, num_paths):
         Target = FinishPoint
         
@@ -140,6 +83,3 @@ class BFSPathSearch(__PathSearch):
             SearchLeafs += NearNodes
             i += 1
         return Result
-
-    def where_will_wolf_go(WolfPosition,CharacterPosition):
-        print(CalculatePath_base(WolfPosition,CharacterPosition,1))
