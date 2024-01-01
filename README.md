@@ -1,6 +1,8 @@
                                           Artificial Intelligence Fundamentals
                                            
                                                   Alpha Team Project
+                                                  
+                                                  NETHACK HUMAN AGENT
 
 Overview
 
@@ -9,7 +11,7 @@ This task is aimed at implementing an agent in a smart pathfinding environment t
 
 Task
 
-The agent starts the first level in a Minihack custom level skill environment surrounded by a broken wall and finds the shortest path using the Bread-first search & A * search method. With the help of simple commands, it is able to navigate to its destination while escaping the Wolf (monster) in about 18 steps.
+The agent starts the first level in a Minihack custom level skill environment surrounded by a broken wall and finds the shortest path using the Bread-first search. With the help of simple commands, it is able to navigate to its destination while escaping the Wolf (monster) in about 18 steps.
 
 
 
@@ -17,8 +19,9 @@ Project environment & softwares
 - Minihack
 - Python
 - Github
+- Linux, Ubuntu (WSL2)
 
 Team members
-- Riccardo
-- Jacopo
-- Selorm
+- Riccardo Marcaccio
+- Iacopo Stracca
+- Selorm Kojo Apoh
