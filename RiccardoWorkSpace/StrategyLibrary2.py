@@ -84,6 +84,7 @@ class Strategy:
     # Our more euristhic strategy. The idea is: from the position where I am I call the CalculatePath_v1/2/3, and if I try a path with risk 0 I choose that path.
     # If not, for each NearPoints where I can go with one move, I check how many moves, at least, I will can do from that position at the next step.
     # I choose to step to the position that gives me more choices to move at the next step.
+    # If there are multiples with same num of choices, we calculated again with CalculatePath_v1/2/3 starting from each of these position and choose the safest one
     def Safety_first(self, StartPoint, num_paths, MonsterPositions, version, i):
         if i == 0:
             l = -1
@@ -105,16 +106,26 @@ class Strategy:
         print("The max is", max_val)
         max_indexes = [index for index, value in enumerate(possible_choices) if value == max_val]
         print("Belonging to these moves", [NearPoints[i] for i in max_indexes])
-        if len(max_indexes)==1:
+        if(path[1] in [NearPoints[i] for i in max_indexes]):
+            print("We chose the move ", path[1], " because it was the lowest_risk solution and is among the selected moves")
+            nextpoint = path[1]
+        elif len(max_indexes)==1:
             print("We chose the only best move that is ", NearPoints[max_indexes[0]])
-            result = [StartPoint,NearPoints[0]]
-        if path[1] in [NearPoints[i] for i in max_indexes]:
-            print("From these moves we chose the move ", path[1], " beacuse it is the move suggested by the lowest-risk path")
-            result = [StartPoint,path[1]]
+            nextpoint = NearPoints[max_indexes[0]]
         else:
-            nextpoint = NearPoints[random.choice(max_indexes)]
-            result = [StartPoint,nextpoint]
-            print("From these moves we chose randomly the move ", nextpoint)
+            arr_risks = []
+            for index in max_indexes:
+                risk = self.Calculate(NearPoints[index], MonsterPositions, num_paths, version, i)[1]
+                arr_risks.append(risk)
+            min_risk = min(arr_risks)
+            min_risk_indexes = [index for index,value in enumerate(arr_risks) if value==min_risk]
+            if len(min_risk_indexes)==1:
+                nextpoint = NearPoints[max_indexes[min_risk_indexes[0]]]
+                print("From these moves we chose the move ", nextpoint, " because has the lowest-risk path (among the calculated ones)")
+            else:
+                nextpoint = NearPoints[max_indexes[random.choice(min_risk_indexes)]]
+                print("From these moves we chose randomly the move ", nextpoint)
+        result = [StartPoint,nextpoint]
         return result
 
 
