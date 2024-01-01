@@ -41,7 +41,7 @@ class Strategy:
                     
         return RiskCost
 
-    #Calculate next optimal point to choose
+    # Given a version of CalculatePath, returns the lowest-risk path and its risk
     def Calculate(self, ActualPosition, MonsterPositions, n_paths, version, step):
         vers = {"v1":self.CalculatePath_v1, "v2":self.CalculatePath_v2, "v3":self.CalculatePath_v3}
         Solutions = vers[version](ActualPosition, self.ActualGoal, n_paths, MonsterPositions)
@@ -56,6 +56,7 @@ class Strategy:
         
         return self.__ActualPath, self.CalculateRiskPathMonsters(Solutions[0],MonsterPositions,step)
 
+    # Given the position of monsters, returns the numbers of monsters that can be in a certain position within n_steps
     def n_monsters_there(self, Position,MonsterPositions,n_steps):
         n_monsters = 0
         for StartPoint in MonsterPositions:
@@ -71,6 +72,7 @@ class Strategy:
                 n_monsters += 1
         return n_monsters
 
+    # Given the position of monsters, returns if a position is safe or not in n_steps, i.e. if a position can be occupied by at least one of the monster in n_steps
     def is_safe(self, Position,MonsterPositions,n_steps):
         if Position in MonsterPositions:
             return False
@@ -79,6 +81,9 @@ class Strategy:
         else:
             return False
 
+    # Our more euristhic strategy. The idea is: from the position where I am I call the CalculatePath_v1/2/3, and if I try a path with risk 0 I choose that path.
+    # If not, for each NearPoints where I can go with one move, I check how many moves, at least, I will can do from that position at the next step.
+    # I choose to step to the position that gives me more choices to move at the next step.
     def Safety_first(self, StartPoint, num_paths, MonsterPositions, version, i):
         if i == 0:
             l = -1
@@ -112,6 +117,39 @@ class Strategy:
             print("From these moves we chose randomly the move ", nextpoint)
         return result
 
+
+    # Our simplest strategy: top num_paths paths by BFS excluding paths that begin with a move toward a non-safe position
+    def CalculatePath_v1(self, StartPoint, FinishPoint, num_paths, MonsterPositions):
+        Target = FinishPoint
+        Result = []
+        NearPoints = self.SuccessorFunction(StartPoint)
+        NearPoints = [point for point in NearPoints if self.is_safe(point,MonsterPositions,1)]
+        if(len(NearPoints)==0):
+            NearPoints = self.SuccessorFunction(StartPoint)
+        elif len(NearPoints)==1:
+            Result = [[StartPoint,NearPoints[0]]]
+            return Result
+        Result = self.Calculator.CalculatePath_base(StartPoint, Target, num_paths)
+        return Result
+    
+    # The same as v1, but now we are forcing to search in all possible first-step directions
+    def CalculatePath_v2(self, StartPoint, FinishPoint, num_paths, MonsterPositions):
+        Target = FinishPoint
+        Result = []
+        NearPoints = self.SuccessorFunction(StartPoint)
+        NearPoints = [point for point in NearPoints if self.is_safe(point,MonsterPositions,1)]
+        if(len(NearPoints)==0):
+            NearPoints = self.SuccessorFunction(StartPoint)
+        elif len(NearPoints)==1:
+            Result = [[StartPoint,NearPoints[0]]]
+            return Result
+        for possible_nearpoint in NearPoints:
+            for result in self.Calculator.CalculatePath_base(possible_nearpoint, Target, int(num_paths/len(NearPoints))):
+                    result.insert(0, StartPoint)
+                    Result.append(result)
+        return Result
+
+    # The same as v2, but now we are forcing to search in all possible first and second step directions. Now are excluded the paths that have in the first two moves the possibility to meet a monster
     def CalculatePath_v3(self, StartPoint, FinishPoint, num_paths, MonsterPositions):
         Target = FinishPoint
         Result = []
@@ -132,34 +170,4 @@ class Strategy:
                     result.insert(0, possible_nearpoint)
                     result.insert(0, StartPoint)
                     Result.append(result)
-        return Result
-
-    def CalculatePath_v2(self, StartPoint, FinishPoint, num_paths, MonsterPositions):
-        Target = FinishPoint
-        Result = []
-        NearPoints = self.SuccessorFunction(StartPoint)
-        NearPoints = [point for point in NearPoints if self.is_safe(point,MonsterPositions,1)]
-        if(len(NearPoints)==0):
-            NearPoints = self.SuccessorFunction(StartPoint)
-        elif len(NearPoints)==1:
-            Result = [[StartPoint,NearPoints[0]]]
-            return Result
-        for possible_nearpoint in NearPoints:
-            for result in self.Calculator.CalculatePath_base(possible_nearpoint, Target, int(num_paths/len(NearPoints))):
-                    result.insert(0, StartPoint)
-                    Result.append(result)
-        return Result
-
-
-    def CalculatePath_v1(self, StartPoint, FinishPoint, num_paths, MonsterPositions):
-        Target = FinishPoint
-        Result = []
-        NearPoints = self.SuccessorFunction(StartPoint)
-        NearPoints = [point for point in NearPoints if self.is_safe(point,MonsterPositions,1)]
-        if(len(NearPoints)==0):
-            NearPoints = self.SuccessorFunction(StartPoint)
-        elif len(NearPoints)==1:
-            Result = [[StartPoint,NearPoints[0]]]
-            return Result
-        Result = self.Calculator.CalculatePath_base(StartPoint, Target, num_paths)
         return Result

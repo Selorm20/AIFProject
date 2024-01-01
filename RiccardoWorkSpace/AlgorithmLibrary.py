@@ -50,6 +50,8 @@ class BFSPathSearch(__PathSearch):
     def __init__(self, GetNeighbourPointsFunction):
         super().__init__(GetNeighbourPointsFunction)
 
+
+    # This is simple BFS that returns the shortest num_paths paths
     def CalculatePath_base(self, StartPoint, FinishPoint, num_paths):
         Target = FinishPoint
         
