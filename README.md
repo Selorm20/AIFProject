@@ -11,7 +11,7 @@ This task is aimed at implementing an agent in a smart pathfinding environment t
 
 Task
 
-The agent starts the first level in a Minihack custom level skill environment surrounded by a broken wall and finds the shortest path using the Bread-first search. With the help of simple commands, it is able to navigate to its destination while escaping the Wolf (monster) in about 18 steps.
+The agent starts the first level in a Minihack custom level skill environment surrounded by a broken wall and finds the shortest path using the Bread-first search. With the help of simple commands, it is able to navigate to its destination while escaping the Wolf (monster).
 
 
 
