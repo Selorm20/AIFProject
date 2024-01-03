@@ -90,17 +90,11 @@ class Strategy:
                 count += self.is_safe(next_pos,possible_monster_positions,1)
             res.append(count)
         return min(res)
-        
-
 
     # Given the position of monsters, returns if a position is safe or not in n_steps, i.e. if a position can be occupied by at least one of the monster in n_steps
     def is_safe(self, Position,MonsterPositions,n_steps):
-        if Position in MonsterPositions:
-            return False
-        if self.n_monsters_there(Position,MonsterPositions,n_steps)==0:
-            return True
-        else:
-            return False
+        if Position in MonsterPositions: return False
+        return self.n_monsters_there(Position,MonsterPositions,n_steps)==0
 
     # Our more euristhic strategy. The idea is: from the position where I am I call the CalculatePath_v1/2/3, and if I try a path with risk 0 I choose that path.
     # If not, for each NearPoints where I can go with one move, I check how many moves, at least, I will can do from that position at the next step.
@@ -114,6 +108,7 @@ class Strategy:
         path, risk = self.Calculate(StartPoint, MonsterPositions, num_paths, version, i)
         if risk==0:
             return path
+        
         NearPoints=self.SuccessorFunction(StartPoint)
         NearPoints=[point for point in NearPoints if self.is_safe(point,MonsterPositions,1+l)]
         possible_choices=[]

@@ -40,6 +40,12 @@ class __PathSearch:
                 
             return Result
         
+        def __contains__(self, Element):
+            if(Element == self.__Element): return True
+            
+            if(self.__PreviousNode != None): return Element in self.__PreviousNode
+            else: return Element == self.__Element
+        
         def __del__(self):
             return NotImplemented
         def __lt__(self, other):
@@ -49,13 +55,16 @@ class __PathSearch:
 class BFSPathSearch(__PathSearch):
     def __init__(self, GetNeighbourPointsFunction):
         super().__init__(GetNeighbourPointsFunction)
-
+        
+    def __call__(self, StartPoint, FinishPoint, num_paths=float("inf"), Total=False):
+        return self.CalculatePath_base(StartPoint, FinishPoint, num_paths, Total)
 
     # This is simple BFS that returns the shortest num_paths paths
-    def CalculatePath_base(self, StartPoint, FinishPoint, num_paths):
+    def CalculatePath_base(self, StartPoint, FinishPoint, num_paths=float("inf"), Total=False):
+        
         Target = FinishPoint
         
-        SearchLeafs = [self._SearchNode(StartPoint, None)]
+        SearchLeafs = [self._SearchNode(StartPoint, None)] #Contains nodes
         self._VisitedElements.clear()
         
         Result = []
@@ -63,17 +72,16 @@ class BFSPathSearch(__PathSearch):
         # While there are leaf nodes to consider
         while len(SearchLeafs) > 0 and len(Result) < num_paths:
             # Find index of the minimum element
-            MinimumPoint = SearchLeafs[0]
-        
-            self._VisitedElements.append(MinimumPoint.GetElement())
+            MinimumPoint = SearchLeafs[0] #Its a node
             
             # Check if the current node is the target
-            if MinimumPoint.GetElement() == Target:
-                Result.append(MinimumPoint.GetPath())
-
-            # Calculate neighbor points of the minimum point
-            NearPoints = self._GetNeighbourPointsFunction(MinimumPoint.GetElement())
+            if MinimumPoint.GetElement() == Target: Result.append(MinimumPoint.GetPath())
             
+            # Calculate neighbor points of the minimum point
+            NearPoints = self._GetNeighbourPointsFunction(MinimumPoint.GetElement()) #Contains elements
+            
+            if(not Total): self._VisitedElements.append(MinimumPoint.GetElement())
+            else: NearPoints = filter(lambda x: x not in MinimumPoint, NearPoints)
 
             # Create new SearchNode instances for the safe neighbor points
             NearNodes = [self._SearchNode(point, MinimumPoint) for point in NearPoints]
