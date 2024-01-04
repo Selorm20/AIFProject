@@ -1,4 +1,4 @@
-class RiskCostFunction:
+class RiskCostProbabyilityFunction:
     def __init__(self, SuccessorFunction):
         self.__SuccessorFunction = SuccessorFunction
     
@@ -62,3 +62,54 @@ class RiskCostFunction:
         
         #Give like result mean of all probabilities of steps
         return sum(StepRiskList) / len(Path)
+    
+    
+    
+    
+    
+    
+class RiskCostWorstCaseFunction:
+    def __init__(self, SuccessorFunction):
+        
+        self.__SuccessorFunction = SuccessorFunction
+        
+    def __call__(self, Path, MonsterPositions, step):
+        RiskCost = 0
+        if step==0:
+            for i in range(len(Path)-1):
+                if i==0:
+                    RiskCost += 1000 * self.__n_monsters_there(Path[1],MonsterPositions,0)
+                if i==1:
+                    RiskCost += 10 * self.__n_monsters_there(Path[2],MonsterPositions,1)
+                elif i==2:
+                    RiskCost += 5 * self.__n_monsters_there(Path[3],MonsterPositions,2)
+                else:
+                    RiskCost += 1 * self.__n_monsters_there(Path[i+1],MonsterPositions,i)
+        else :
+            for i in range(len(Path)-1):
+                if i==0:
+                    RiskCost += 1000 * self.__n_monsters_there(Path[1],MonsterPositions,1)
+                if i==1:
+                    RiskCost += 10 * self.__n_monsters_there(Path[2],MonsterPositions,2)
+                elif i==2:
+                    RiskCost += 5 * self.__n_monsters_there(Path[3],MonsterPositions,3)
+                else:
+                    RiskCost += 1 * self.__n_monsters_there(Path[i+1],MonsterPositions,i+1)
+                    
+        return RiskCost
+    
+    def __n_monsters_there(self, Position, MonsterPositions, n_steps):
+        n_monsters = 0
+        for StartPoint in MonsterPositions:
+            ActualPoints = set()
+            ActualPoints.add(StartPoint)
+            for i in range(n_steps):
+                KnewPoints = set()
+                for Point in ActualPoints:
+                    for NewPoint in self.__SuccessorFunction(Point):
+                        KnewPoints.add(NewPoint)
+                ActualPoints = KnewPoints
+            if Position in ActualPoints:
+                n_monsters += 1
+        return n_monsters
+

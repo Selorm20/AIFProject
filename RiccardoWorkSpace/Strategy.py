@@ -79,59 +79,60 @@ class LessRiskPathStrategy(Strategy):
         Paths = [Path(x, self._CalculatorRiskFunctionPath(x, MonsterPositions)) for x in Paths]
         Paths.sort(key=lambda x: (x.GetRiskCost(), len(x.GetPath())))
         
+        print("Paths calculated: ")
+        for i in Paths: print(i)
+        
         try: self._ActualPath = Paths[0]
         except: self._ActualPath = [ActualPosition, random.choice(self.__SuccessorFunction(ActualPosition))]
         
-        return self._ActualPath[1]
-
-
+        return Paths, self._ActualPath[1]
 
 class SafetyFirstStrategy(Strategy):
-    def __init__(self, SuccessorFunction, CalculatePathsFunction):
+    def __init__(self, SuccessorFunction, CalculatePathsFunction, CalculateRiskCostPathFunction):
         
-        super().__init__(CalculatePathsFunction, None)
+        super().__init__(CalculatePathsFunction, CalculateRiskCostPathFunction)
         
         self.SuccessorFunction = SuccessorFunction
  
-    def CalculateRiskPathMonsters(self, Path, MonsterPositions, step):
-        RiskCost = 0
-        if step==0:
-            for i in range(len(Path)-1):
-                if i==0:
-                    RiskCost += 1000 * self.n_monsters_there(Path[1],MonsterPositions,0)
-                if i==1:
-                    RiskCost += 10 * self.n_monsters_there(Path[2],MonsterPositions,1)
-                elif i==2:
-                    RiskCost += 5 * self.n_monsters_there(Path[3],MonsterPositions,2)
-                else:
-                    RiskCost += 1 * self.n_monsters_there(Path[i+1],MonsterPositions,i)
-        else :
-            for i in range(len(Path)-1):
-                if i==0:
-                    RiskCost += 1000 * self.n_monsters_there(Path[1],MonsterPositions,1)
-                if i==1:
-                    RiskCost += 10 * self.n_monsters_there(Path[2],MonsterPositions,2)
-                elif i==2:
-                    RiskCost += 5 * self.n_monsters_there(Path[3],MonsterPositions,3)
-                else:
-                    RiskCost += 1 * self.n_monsters_there(Path[i+1],MonsterPositions,i+1)
+    # def CalculateRiskPathMonsters(self, Path, MonsterPositions, step):
+    #     RiskCost = 0
+    #     if step==0:
+    #         for i in range(len(Path)-1):
+    #             if i==0:
+    #                 RiskCost += 1000 * self.n_monsters_there(Path[1],MonsterPositions,0)
+    #             if i==1:
+    #                 RiskCost += 10 * self.n_monsters_there(Path[2],MonsterPositions,1)
+    #             elif i==2:
+    #                 RiskCost += 5 * self.n_monsters_there(Path[3],MonsterPositions,2)
+    #             else:
+    #                 RiskCost += 1 * self.n_monsters_there(Path[i+1],MonsterPositions,i)
+    #     else :
+    #         for i in range(len(Path)-1):
+    #             if i==0:
+    #                 RiskCost += 1000 * self.n_monsters_there(Path[1],MonsterPositions,1)
+    #             if i==1:
+    #                 RiskCost += 10 * self.n_monsters_there(Path[2],MonsterPositions,2)
+    #             elif i==2:
+    #                 RiskCost += 5 * self.n_monsters_there(Path[3],MonsterPositions,3)
+    #             else:
+    #                 RiskCost += 1 * self.n_monsters_there(Path[i+1],MonsterPositions,i+1)
                     
-        return RiskCost
+    #     return RiskCost
 
     # Given a version of CalculatePath, returns the lowest-risk path and its risk
     def Calculate(self, ActualPosition, MonsterPositions, n_paths, version, step):
         vers = {"v2":self.CalculatePath_v2, "v3":self.CalculatePath_v3}
         Solutions = vers[version](ActualPosition, self.ActualGoal, n_paths, MonsterPositions)
 
-        Solutions.sort(key=lambda x: (self.CalculateRiskPathMonsters(x, MonsterPositions, step), len(x)))
+        Solutions.sort(key=lambda x: (self._CalculatorRiskFunctionPath(x, MonsterPositions, step), len(x)))
 
         print("The 5 best paths calculated by strategy " + version + " are:")
         for i in Solutions[:5]:
-            print(i, self.CalculateRiskPathMonsters(i, MonsterPositions, step))
+            print(i, self._CalculatorRiskFunctionPath(i, MonsterPositions, step))
 
         self._ActualPath = Solutions[0]
         
-        return self._ActualPath, self.CalculateRiskPathMonsters(Solutions[0],MonsterPositions,step)
+        return self._ActualPath, self._CalculatorRiskFunctionPath(Solutions[0],MonsterPositions,step)
 
     # Given the position of monsters, returns the numbers of monsters that can be in a certain position within n_steps
     def n_monsters_there(self, Position,MonsterPositions,n_steps):
