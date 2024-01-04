@@ -59,7 +59,7 @@ class LessRiskPathStrategy(Strategy):
                 
                 #If on 1 iteration there is only one choice, choose it without continue with computing (shortcut of computing)
                 if(i == 0 and len(NextPointsValues) == 1):
-                    self._ActualPath = [ActualPosition, NextPointsValues[0]]
+                    self._ActualPath = Path([ActualPosition, NextPointsValues[0]], float("inf"))
                     return NextPointsValues[0]
 
                 #For each new point calculate new path to that new point
@@ -83,9 +83,9 @@ class LessRiskPathStrategy(Strategy):
         for i in Paths: print(i)
         
         try: self._ActualPath = Paths[0]
-        except: self._ActualPath = [ActualPosition, random.choice(self.__SuccessorFunction(ActualPosition))]
+        except: self._ActualPath = Path([ActualPosition, random.choice(self.__SuccessorFunction(ActualPosition))], float("inf"))
         
-        return Paths, self._ActualPath[1]
+        return self._ActualPath[1]
 
 class SafetyFirstStrategy(Strategy):
     def __init__(self, SuccessorFunction, CalculatePathsFunction, CalculateRiskCostPathFunction):
