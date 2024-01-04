@@ -3,7 +3,7 @@ class Path:
         self.__Path = Path
         self.__RiskCost = RiskCost
         
-    def GetPath(self): return self.__Path
+    def GetPath(self): return list(self.__Path)
     def GetRiskCost(self): return self.__RiskCost
     
     def __getitem__(self, key):

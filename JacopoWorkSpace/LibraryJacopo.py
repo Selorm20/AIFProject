@@ -4,6 +4,15 @@ import matplotlib.pyplot as plt
 import gym
 import minihack
 
+import cv2
+
+def create_video(output_path, frames, frame_rate):
+    height, width, _ = frames[0].shape
+    video_writer = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'DIVX'), frame_rate, (width, height))
+    for frame in frames:
+        video_writer.write(frame)
+    video_writer.release()
+
 class Map:
     def __init__(self, state):
         self.__state = state
@@ -26,8 +35,6 @@ class Map:
         # Mostra la mappa
         plt.imshow(image)
         plt.show()
-
-
     
     def get_position_symbol(self, x, y):
         return chr(self.__state["chars"][x][y])

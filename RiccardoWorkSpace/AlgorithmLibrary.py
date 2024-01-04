@@ -1,3 +1,40 @@
+class SearchNode:
+    def __init__(self, Element, PreviousNode):
+        self.__PreviousNode = PreviousNode
+        self.__Element = Element
+        self.__Count = 0 if PreviousNode == None else PreviousNode.GetCount()+1
+                
+    def GetPreviousNode(self):
+        return self.__PreviousNode
+            
+    def GetElement(self):
+        return self.__Element
+            
+    def GetCount(self):
+        return self.__Count
+            
+    def GetPath(self):
+        Result = []
+        Step = self
+            
+        while(Step != None):
+            Result.insert(0, Step.GetElement())
+            Step = Step.GetPreviousNode()
+                
+        return Result
+        
+    def __contains__(self, Element):
+        if(Element == self.__Element): return True
+            
+        if(self.__PreviousNode != None): return Element in self.__PreviousNode
+        else: return Element == self.__Element
+        
+    def __del__(self):
+        return NotImplemented
+    
+    def __lt__(self, other):
+        return self.__Count < other.__Count
+
 class __PathSearch:
     def __init__(self, GetNeighbourPointsFunction):
         
@@ -14,43 +51,6 @@ class __PathSearch:
             if(Points[i].GetCount() < MinimumPoint.GetCount()): MinimumPoint, r = Points[i], i
             
         return MinimumPoint, r
-    
-    class _SearchNode:
-        def __init__(self, Element, PreviousNode):
-            self.__PreviousNode = PreviousNode
-            self.__Element = Element
-            self.__Count = 0 if PreviousNode == None else PreviousNode.GetCount()+1
-                
-        def GetPreviousNode(self):
-            return self.__PreviousNode
-            
-        def GetElement(self):
-            return self.__Element
-            
-        def GetCount(self):
-            return self.__Count
-            
-        def GetPath(self):
-            Result = []
-            Step = self
-            
-            while(Step != None):
-                Result.insert(0, Step.GetElement())
-                Step = Step.GetPreviousNode()
-                
-            return Result
-        
-        def __contains__(self, Element):
-            if(Element == self.__Element): return True
-            
-            if(self.__PreviousNode != None): return Element in self.__PreviousNode
-            else: return Element == self.__Element
-        
-        def __del__(self):
-            return NotImplemented
-        def __lt__(self, other):
-            return self.__Count < other.__Count
-
 
 class BFSPathSearch(__PathSearch):
     def __init__(self, GetNeighbourPointsFunction):
@@ -64,7 +64,7 @@ class BFSPathSearch(__PathSearch):
         
         Target = FinishPoint
         
-        SearchLeafs = [self._SearchNode(StartPoint, None)] #Contains nodes
+        SearchLeafs = [SearchNode(StartPoint, None)] #Contains nodes
         self._VisitedElements.clear()
         
         Result = []
@@ -84,7 +84,7 @@ class BFSPathSearch(__PathSearch):
             else: NearPoints = filter(lambda x: x not in MinimumPoint, NearPoints)
 
             # Create new SearchNode instances for the safe neighbor points
-            NearNodes = [self._SearchNode(point, MinimumPoint) for point in NearPoints]
+            NearNodes = [SearchNode(point, MinimumPoint) for point in NearPoints]
             
             # Delete the minimum point previously explored
             del SearchLeafs[0]
